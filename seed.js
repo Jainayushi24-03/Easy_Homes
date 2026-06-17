@@ -91,15 +91,15 @@ async function seed() {
     if (!owner) {
       const hashed = await bcrypt.hash("owner123", 10);
       owner = await User.create({
-        name: "Demo Owner",
+        name: "Sukhdev Pal",
         email: "owner@easyhomes.com",
         password: hashed,
         phone: "9876543210",
         role: "owner",
       });
-      console.log("Created demo owner: owner@easyhomes.com / owner123");
+      console.log("Created owner: owner@easyhomes.com / owner123");
     } else {
-      console.log("Demo owner already exists");
+      console.log("Owner already exists");
     }
 
     await db.properties.remove({}, { multi: true });
