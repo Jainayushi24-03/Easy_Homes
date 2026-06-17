@@ -14,8 +14,8 @@ const hall = [
   "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&h=400&fit=crop",
   "https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=800&h=400&fit=crop",
   "https://images.unsplash.com/photo-1600047509358-9e755f1e04e1?w=800&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=800&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1613977257365-aaae5a9817ff?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=400&fit=crop",
 ];
 const bedroom = [
   "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800&h=400&fit=crop",
@@ -28,8 +28,8 @@ const bedroom = [
   "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800&h=400&fit=crop",
   "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=400&fit=crop",
   "https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=800&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1560185007-5f0bb1866cab?w=800&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1630699144867-37acec97df5a?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=800&h=400&fit=crop",
 ];
 const kitchen = [
   "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&h=400&fit=crop",
@@ -42,8 +42,8 @@ const kitchen = [
   "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?w=800&h=400&fit=crop",
   "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=800&h=400&fit=crop",
   "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&h=400&fit=crop",
-  "https://images.unsplash.com/photo-1600566753086-00f18f6bae2b?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&h=400&fit=crop",
 ];
 const dining = [
   "https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&h=400&fit=crop",
