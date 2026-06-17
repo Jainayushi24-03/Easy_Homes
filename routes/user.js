@@ -10,7 +10,7 @@ const { auth, userOnly } = require("../middleware/auth");
 
 const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || "";
 const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
-const razorpayEnabled = RAZORPAY_KEY_ID.startsWith("rzp_") && RAZORPAY_KEY_SECRET.length > 0;
+const razorpayEnabled = RAZORPAY_KEY_ID.startsWith("rzp_") && RAZORPAY_KEY_SECRET.length > 0 && !RAZORPAY_KEY_ID.includes("YourKeyId") && !RAZORPAY_KEY_SECRET.includes("YourKeySecret");
 
 const razorpay = razorpayEnabled ? new Razorpay({
   key_id: RAZORPAY_KEY_ID,

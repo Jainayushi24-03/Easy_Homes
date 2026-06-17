@@ -70,6 +70,14 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  if (req.path.startsWith("/user/") || req.path.startsWith("/owner/")) {
+    return res.status(500).json({ error: err.message || "Internal server error" });
+  }
+  res.status(500).send("Something broke!");
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
