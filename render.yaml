@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: easy-homes
+    env: node
+    region: singapore
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: BASE_URL
+        value: https://easy-homes.onrender.com
+      - key: SEED_ON_START
+        value: "true"
+      - key: DATA_DIR
+        value: /data
+    disk:
+      name: nedb-data
+      mountPath: /data
+      sizeGB: 1

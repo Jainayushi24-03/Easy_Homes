@@ -5,7 +5,7 @@ const session = require("express-session");
 const path = require("path");
 const fs = require("fs");
 
-const dataDir = path.join(__dirname, "data");
+const dataDir = process.env.DATA_DIR || path.join(__dirname, "data");
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
 const uploadsDir = path.join(__dirname, "public", "uploads");
@@ -33,7 +33,7 @@ app.use(
     secret: process.env.SESSION_SECRET || "secret",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: { secure: process.env.NODE_ENV === "production" },
   })
 );
 
@@ -79,6 +79,14 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  if (process.env.SEED_ON_START === "true") {
+    try {
+      await require("./seed")();
+      console.log("Auto-seed complete");
+    } catch (e) {
+      console.error("Auto-seed error:", e.message);
+    }
+  }
 });

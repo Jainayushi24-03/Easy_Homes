@@ -113,7 +113,7 @@ router.get("/property/:id", auth, userOnly, async (req, res) => {
   const ratingData = await Review.getAverageRating(req.params.id);
   const userReview = await Review.findByUserAndProperty(req.user._id, req.params.id);
 
-  const baseUrl = `${req.protocol}://${req.get("host")}`;
+  const baseUrl = process.env.BASE_URL || `${req.protocol}://${req.get("host")}`;
 
   res.render("user/property-detail", {
     property,
