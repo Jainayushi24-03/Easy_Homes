@@ -47,20 +47,25 @@
           <div class="mb-3">
             <label class="form-label">Property Images</label>
             <div class="row g-2">
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <label class="form-label small">Hall / Living Room</label>
                 <input type="file" name="imgHall" class="form-control" accept="image/*">
                 <% if (property.images && property.images.hall) { %><small class="text-muted">Current: <a href="<%= property.images.hall %>" target="_blank">View</a></small><% } %>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <label class="form-label small">Bedroom</label>
                 <input type="file" name="imgBedroom" class="form-control" accept="image/*">
                 <% if (property.images && property.images.bedroom) { %><small class="text-muted">Current: <a href="<%= property.images.bedroom %>" target="_blank">View</a></small><% } %>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <label class="form-label small">Kitchen</label>
                 <input type="file" name="imgKitchen" class="form-control" accept="image/*">
                 <% if (property.images && property.images.kitchen) { %><small class="text-muted">Current: <a href="<%= property.images.kitchen %>" target="_blank">View</a></small><% } %>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small">Dining Room</label>
+                <input type="file" name="imgDining" class="form-control" accept="image/*">
+                <% if (property.images && property.images.dining) { %><small class="text-muted">Current: <a href="<%= property.images.dining %>" target="_blank">View</a></small><% } %>
               </div>
             </div>
             <small class="text-muted">Max 5MB per image. Leave empty to keep current images.</small>

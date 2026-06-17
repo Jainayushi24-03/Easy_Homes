@@ -43,14 +43,16 @@ router.post("/add-property", auth, ownerOnly, upload.fields([
   { name: "imgHall", maxCount: 1 },
   { name: "imgBedroom", maxCount: 1 },
   { name: "imgKitchen", maxCount: 1 },
+  { name: "imgDining", maxCount: 1 },
 ]), async (req, res) => {
   try {
     const { title, description, price, bedrooms, bathrooms, area, address, city, state, pincode, ownerContactRevealPrice } = req.body;
-    const images = { hall: "", bedroom: "", kitchen: "" };
+    const images = { hall: "", bedroom: "", kitchen: "", dining: "" };
     if (req.files) {
       if (req.files.imgHall) images.hall = "/uploads/" + req.files.imgHall[0].filename;
       if (req.files.imgBedroom) images.bedroom = "/uploads/" + req.files.imgBedroom[0].filename;
       if (req.files.imgKitchen) images.kitchen = "/uploads/" + req.files.imgKitchen[0].filename;
+      if (req.files.imgDining) images.dining = "/uploads/" + req.files.imgDining[0].filename;
     }
     await Property.create({
       owner: req.user._id,
@@ -83,6 +85,7 @@ router.post("/edit-property/:id", auth, ownerOnly, upload.fields([
   { name: "imgHall", maxCount: 1 },
   { name: "imgBedroom", maxCount: 1 },
   { name: "imgKitchen", maxCount: 1 },
+  { name: "imgDining", maxCount: 1 },
 ]), async (req, res) => {
   try {
     const { title, description, price, bedrooms, bathrooms, area, address, city, state, pincode, available, ownerContactRevealPrice } = req.body;
@@ -104,6 +107,7 @@ router.post("/edit-property/:id", auth, ownerOnly, upload.fields([
       if (req.files.imgHall) update["images.hall"] = "/uploads/" + req.files.imgHall[0].filename;
       if (req.files.imgBedroom) update["images.bedroom"] = "/uploads/" + req.files.imgBedroom[0].filename;
       if (req.files.imgKitchen) update["images.kitchen"] = "/uploads/" + req.files.imgKitchen[0].filename;
+      if (req.files.imgDining) update["images.dining"] = "/uploads/" + req.files.imgDining[0].filename;
     }
     await Property.findOneAndUpdate(
       { _id: req.params.id, owner: req.user._id },

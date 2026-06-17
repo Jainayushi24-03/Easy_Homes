@@ -1,10 +1,17 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+const Razorpay = require("razorpay");
 const Property = require("../models/Property");
 const Subscription = require("../models/Subscription");
 const Review = require("../models/Review");
 const User = require("../models/User");
 const { auth, userOnly } = require("../middleware/auth");
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_xxx",
+  key_secret: process.env.RAZORPAY_KEY_SECRET || "xxx",
+});
 
 const router = express.Router();
 
@@ -213,42 +220,74 @@ router.get("/subscriptions", auth, userOnly, async (req, res) => {
   });
 });
 
-router.post("/subscribe", auth, userOnly, async (req, res) => {
+router.post("/create-order", auth, userOnly, async (req, res) => {
   try {
-    const { plan } = req.body;
-    const planDetails = PLAN_DETAILS[plan];
-    if (!planDetails) {
-      const subscriptions = await Subscription.find({ user: req.user._id });
-      return res.render("user/subscriptions", {
-        plans: Object.entries(PLAN_DETAILS).map(([key, val]) => ({ key, ...val })),
-        subscriptions,
-        currentSub: null,
-        error: "Invalid plan",
-      });
+    const { plan, type, propertyId } = req.body;
+    if (type === "subscription") {
+      const planDetails = PLAN_DETAILS[plan];
+      if (!planDetails) return res.status(400).json({ error: "Invalid plan" });
+      const options = {
+        amount: planDetails.price * 100,
+        currency: "INR",
+        receipt: `sub_${req.user._id}_${Date.now()}`,
+      };
+      const order = await razorpay.orders.create(options);
+      return res.json({ orderId: order.id, amount: order.amount, key: razorpay.key_id, plan, type: "subscription" });
     }
+    if (type === "reveal") {
+      const property = await Property.findById(propertyId);
+      if (!property) return res.status(400).json({ error: "Property not found" });
+      if (req.session.paidProperties && req.session.paidProperties.includes(propertyId)) {
+        return res.json({ alreadyPaid: true });
+      }
+      const options = {
+        amount: (property.ownerContactRevealPrice || 50) * 100,
+        currency: "INR",
+        receipt: `rev_${req.user._id}_${propertyId}_${Date.now()}`,
+      };
+      const order = await razorpay.orders.create(options);
+      return res.json({ orderId: order.id, amount: order.amount, key: razorpay.key_id, propertyId, type: "reveal" });
+    }
+    res.status(400).json({ error: "Invalid type" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + planDetails.durationDays);
-
-    await Subscription.create({
-      user: req.user._id,
-      plan,
-      amount: planDetails.price,
-      endDate,
-      paymentId: `PAY_${Date.now()}`,
-    });
-
-    await User.findByIdAndUpdate(req.user._id, {
-      "subscription.plan": plan,
-      "subscription.startDate": new Date(),
-      "subscription.endDate": endDate,
-      "subscription.searchLimit": planDetails.searchLimit,
-      "subscription.searchesUsed": 0,
-    });
-
-    res.redirect("/user/subscriptions");
-  } catch {
-    res.redirect("/user/subscriptions");
+router.post("/verify-payment", auth, userOnly, async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, plan, type, propertyId } = req.body;
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSig = crypto.createHmac("sha256", razorpay.key_secret).update(body).digest("hex");
+    if (expectedSig !== razorpay_signature) {
+      return res.status(400).json({ success: false, error: "Invalid signature" });
+    }
+    if (type === "subscription") {
+      const planDetails = PLAN_DETAILS[plan];
+      if (!planDetails) return res.status(400).json({ success: false, error: "Invalid plan" });
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + planDetails.durationDays);
+      await Subscription.create({
+        user: req.user._id, plan, amount: planDetails.price, endDate,
+        paymentId: razorpay_payment_id, status: "active",
+      });
+      await User.findByIdAndUpdate(req.user._id, {
+        "subscription.plan": plan, "subscription.startDate": new Date(),
+        "subscription.endDate": endDate, "subscription.searchLimit": planDetails.searchLimit,
+        "subscription.searchesUsed": 0,
+      });
+      return res.json({ success: true, redirect: "/user/subscriptions" });
+    }
+    if (type === "reveal") {
+      if (!req.session.paidProperties) req.session.paidProperties = [];
+      if (!req.session.paidProperties.includes(propertyId)) {
+        req.session.paidProperties.push(propertyId);
+      }
+      return res.json({ success: true, redirect: `/user/property/${propertyId}` });
+    }
+    res.status(400).json({ success: false, error: "Invalid type" });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

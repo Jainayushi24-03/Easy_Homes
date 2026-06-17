@@ -28,6 +28,7 @@
     "express-session": "^1.19.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
-    "nedb-promises": "^6.2.3"
+    "nedb-promises": "^6.2.3",
+    "razorpay": "^2.9.6"
   }
 }
