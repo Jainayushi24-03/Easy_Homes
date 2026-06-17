@@ -1,0 +1,72 @@
+require("dotenv").config();
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const path = require("path");
+const fs = require("fs");
+
+const dataDir = path.join(__dirname, "data");
+if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+
+const jwt = require("jsonwebtoken");
+const User = require("./models/User");
+
+const authRoutes = require("./routes/auth");
+const ownerRoutes = require("./routes/owner");
+const userRoutes = require("./routes/user");
+
+const app = express();
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
+
+app.use(async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id);
+      if (user) {
+        delete user.password;
+        req.user = user;
+        res.locals.user = user;
+      } else {
+        req.user = null;
+        res.locals.user = null;
+      }
+    } else {
+      req.user = null;
+      res.locals.user = null;
+    }
+  } catch {
+    req.user = null;
+    res.locals.user = null;
+  }
+  next();
+});
+
+app.use("/", authRoutes);
+app.use("/owner", ownerRoutes);
+app.use("/user", userRoutes);
+
+app.get("/", (req, res) => {
+  res.render("index");
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});

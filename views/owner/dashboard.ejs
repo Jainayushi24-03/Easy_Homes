@@ -1,0 +1,38 @@
+<%- include('../partials/header') %>
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-in">
+  <div>
+    <h2 class="fw-bold mb-1"><i class="bi bi-building text-gradient"></i> My Properties</h2>
+    <p class="text-muted mb-0">Manage your rental listings</p>
+  </div>
+  <a href="/owner/add-property" class="btn btn-success mt-2 mt-sm-0"><i class="bi bi-plus-circle"></i> Add Property</a>
+</div>
+<% if (properties.length === 0) { %>
+  <div class="alert alert-info animate-in"><i class="bi bi-info-circle"></i> You haven't listed any properties yet. <a href="/owner/add-property" class="fw-semibold">Add your first property</a></div>
+<% } else { %>
+  <div class="row g-4">
+    <% properties.forEach((p, i) => { %>
+      <div class="col-md-6 col-lg-4 animate-in">
+        <div class="card shadow-sm h-100">
+          <img src="<%= p.images && p.images.hall || 'https://picsum.photos/seed/default/400/280' %>" class="card-img-top owner-img" alt="<%= p.title %>" onerror="this.style.display='none'">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title fw-bold"><%= p.title %></h5>
+            <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill text-primary"></i> <%= p.city %>, <%= p.state %> - <%= p.pincode %></p>
+            <div class="d-flex gap-2 mb-2 flex-wrap">
+              <span class="badge bg-primary fs-6">₹<%= p.price %>/mo</span>
+              <span class="badge bg-info"><%= p.bedrooms %> BHK</span>
+              <span class="badge <%= p.available ? 'bg-success' : 'bg-warning' %>"><%= p.available ? 'Available' : 'Rented' %></span>
+            </div>
+            <p class="mt-auto"><small class="text-muted">Reveal price: ₹<%= p.ownerContactRevealPrice %></small></p>
+            <div class="d-flex gap-2">
+              <a href="/owner/edit-property/<%= p._id %>" class="btn btn-outline-primary btn-sm flex-fill"><i class="bi bi-pencil"></i> Edit</a>
+              <form method="POST" action="/owner/delete-property/<%= p._id %>" onsubmit="return confirm('Delete this property?')" class="flex-fill">
+                <button type="submit" class="btn btn-outline-danger btn-sm w-100"><i class="bi bi-trash"></i> Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } %>
+<%- include('../partials/footer') %>

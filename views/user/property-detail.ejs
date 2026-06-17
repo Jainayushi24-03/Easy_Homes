@@ -1,0 +1,122 @@
+<%- include('../partials/header') %>
+<div class="row animate-in">
+  <div class="col-lg-8 mb-4">
+    <div class="card shadow-lg border-0 overflow-hidden">
+      <% var imgs = property.images || {}; %>
+      <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="0" class="active"></button>
+          <button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="1"></button>
+          <button type="button" data-bs-target="#propertyCarousel" data-bs-slide-to="2"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="<%= imgs.hall || 'https://picsum.photos/seed/default-hall/800/400' %>" class="d-block w-100 property-img-detail" alt="Hall" onerror="this.style.display='none'">
+            <div class="carousel-caption bg-dark bg-opacity-50 rounded-3"><i class="bi bi-house-door"></i> Living Room / Hall</div>
+          </div>
+          <div class="carousel-item">
+            <img src="<%= imgs.bedroom || 'https://picsum.photos/seed/default-bed/800/400' %>" class="d-block w-100 property-img-detail" alt="Bedroom" onerror="this.style.display='none'">
+            <div class="carousel-caption bg-dark bg-opacity-50 rounded-3"><i class="bi bi-bed"></i> Bedroom</div>
+          </div>
+          <div class="carousel-item">
+            <img src="<%= imgs.kitchen || 'https://picsum.photos/seed/default-kit/800/400' %>" class="d-block w-100 property-img-detail" alt="Kitchen" onerror="this.style.display='none'">
+            <div class="carousel-caption bg-dark bg-opacity-50 rounded-3"><i class="bi bi-cup-hot"></i> Kitchen</div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </button>
+      </div>
+      <div class="p-3 room-badges bg-light border-bottom">
+        <span class="room-badge active" onclick="carouselTo(0)"><i class="bi bi-house-door"></i> Hall</span>
+        <span class="room-badge" onclick="carouselTo(1)"><i class="bi bi-bed"></i> Bedroom</span>
+        <span class="room-badge" onclick="carouselTo(2)"><i class="bi bi-cup-hot"></i> Kitchen</span>
+      </div>
+      <script>
+        function carouselTo(n) {
+          var c = document.getElementById('propertyCarousel');
+          if (c) { var bsCarousel = bootstrap.Carousel.getInstance(c); if (bsCarousel) bsCarousel.to(n); }
+          document.querySelectorAll('.room-badge').forEach(function(e,i){ e.classList.toggle('active',i===n); });
+        }
+        document.getElementById('propertyCarousel').addEventListener('slid.bs.carousel', function(e) {
+          document.querySelectorAll('.room-badge').forEach(function(el,i){ el.classList.toggle('active',i===e.to); });
+        });
+      </script>
+      <div class="card-body p-4">
+        <h2 class="fw-bold"><%= property.title %></h2>
+        <p class="text-muted mb-3"><i class="bi bi-geo-alt-fill text-primary"></i> <%= property.address %>, <%= property.city %>, <%= property.state %> — <%= property.pincode %></p>
+        <hr>
+        <div class="row text-center g-3 mb-4">
+          <div class="col-3">
+            <div class="bg-light rounded-3 p-3">
+              <h3 class="text-primary fw-bold mb-0">₹<%= property.price %></h3>
+              <small class="text-muted">Per Month</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="bg-light rounded-3 p-3">
+              <h3 class="text-primary fw-bold mb-0"><%= property.bedrooms %></h3>
+              <small class="text-muted">Bedrooms</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="bg-light rounded-3 p-3">
+              <h3 class="text-primary fw-bold mb-0"><%= property.bathrooms %></h3>
+              <small class="text-muted">Bathrooms</small>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="bg-light rounded-3 p-3">
+              <h3 class="text-primary fw-bold mb-0"><%= property.area || '—' %></h3>
+              <small class="text-muted">Area</small>
+            </div>
+          </div>
+        </div>
+        <h5 class="fw-bold">Description</h5>
+        <p class="text-muted"><%= property.description %></p>
+        <span class="badge <%= property.available ? 'bg-success' : 'bg-warning' %> fs-6 px-3 py-2"><%= property.available ? '✓ Available' : '✗ Rented' %></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4 mb-4">
+    <div class="card shadow-lg border-0 sticky-top" style="top: 90px;">
+      <div class="card-header bg-primary text-white py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-person-circle"></i> Owner Details</h5>
+      </div>
+      <div class="card-body p-4">
+        <% if (hasPaid || isSubscribed) { %>
+          <div class="text-center mb-3">
+            <div class="feature-icon purple mx-auto mb-3" style="width:70px;height:70px;font-size:2rem"><i class="bi bi-person-fill"></i></div>
+            <h5 class="fw-bold"><%= property.owner.name %></h5>
+          </div>
+          <hr>
+          <p class="mb-2"><i class="bi bi-envelope-fill text-primary me-2"></i> <strong>Email:</strong><br><span class="text-muted"><%= property.owner.email %></span></p>
+          <p class="mb-2"><i class="bi bi-telephone-fill text-primary me-2"></i> <strong>Phone:</strong><br><span class="text-muted"><%= property.owner.phone || 'Not provided' %></span></p>
+        <% } else if (isSubscribed) { %>
+          <div class="text-center">
+            <i class="bi bi-check-circle-fill text-success display-6"></i>
+            <p class="mt-2">You have a subscription! Owner details are visible.</p>
+          </div>
+        <% } else { %>
+          <div class="text-center mb-3">
+            <i class="bi bi-lock-fill text-muted display-6"></i>
+            <p class="text-muted mt-2">Owner details are hidden</p>
+            <h5 class="fw-bold text-primary">₹<%= property.ownerContactRevealPrice %></h5>
+            <p class="text-muted small">to reveal owner contact</p>
+          </div>
+          <form method="POST" action="/user/pay-reveal/<%= property._id %>">
+            <button type="submit" class="btn btn-success w-100 py-2 fw-semibold mb-3"><i class="bi bi-unlock-fill"></i> Pay ₹<%= property.ownerContactRevealPrice %> &amp; Reveal</button>
+          </form>
+          <div class="text-center">
+            <p class="text-muted small">— OR —</p>
+            <a href="/user/subscriptions" class="btn btn-warning w-100 py-2 fw-semibold"><i class="bi bi-star-fill"></i> Subscribe for Unlimited</a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

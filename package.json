@@ -1,0 +1,32 @@
+{
+  "name": "easy_homes",
+  "version": "1.0.0",
+  "description": "House Rent Web Application with Owner and User Dashboards",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jainayushi24-03/Easy_Homes.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Jainayushi24-03/Easy_Homes/issues"
+  },
+  "homepage": "https://github.com/Jainayushi24-03/Easy_Homes#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.3",
+    "nedb-promises": "^6.2.3"
+  }
+}

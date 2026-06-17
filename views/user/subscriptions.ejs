@@ -1,0 +1,76 @@
+<%- include('../partials/header') %>
+<div class="text-center mb-5 animate-in">
+  <h2 class="fw-bold"><i class="bi bi-star-fill text-warning"></i> Choose Your Plan</h2>
+  <p class="text-muted fs-5">Unlock premium features with our subscription plans</p>
+</div>
+<% if (locals.error) { %>
+  <div class="alert alert-danger animate-in"><i class="bi bi-exclamation-triangle"></i> <%= error %></div>
+<% } %>
+<% if (locals.currentSub) { %>
+  <div class="alert alert-success animate-in text-center">
+    <i class="bi bi-check-circle-fill"></i> You have an active <strong><%= currentSub.plan.toUpperCase() %></strong> plan until <strong><%= new Date(currentSub.endDate).toLocaleDateString() %></strong>.
+  </div>
+<% } %>
+<div class="row justify-content-center g-4 mt-2">
+  <% plans.forEach(plan => { %>
+    <div class="col-md-6 col-lg-4 animate-in">
+      <div class="card plan-card h-100 <%= currentSub && currentSub.plan === plan.key ? 'active-plan border-3' : '' %>">
+        <div class="card-body text-center p-4 d-flex flex-column">
+          <% if (plan.key === 'gold') { %>
+            <span class="badge bg-warning text-dark align-self-center mb-2 px-3 py-1">🔥 Most Popular</span>
+          <% } %>
+          <h3 class="fw-bold text-uppercase text-primary mb-0"><%= plan.label %></h3>
+          <p class="text-muted small mb-3"><%= plan.durationDays %> days access</p>
+          <h1 class="display-4 fw-bold mb-0">₹<%= plan.price %></h1>
+          <p class="text-muted small">one-time payment</p>
+          <hr>
+          <ul class="list-unstyled text-start flex-grow-1">
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> <%= plan.searchLimit === -1 ? '♾️ Unlimited' : plan.searchLimit %> Searches</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> 👤 Owner Details Access</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> ⭐ Priority Support</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> 🔍 Advanced Filters</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success"></i> 📱 Mobile Friendly</li>
+          </ul>
+          <% if (!currentSub || currentSub.plan !== plan.key) { %>
+            <form method="POST" action="/user/subscribe" class="mt-auto">
+              <input type="hidden" name="plan" value="<%= plan.key %>">
+              <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold"><i class="bi bi-lightning-fill"></i> Subscribe — ₹<%= plan.price %></button>
+            </form>
+          <% } else { %>
+            <button class="btn btn-success w-100 py-2 fw-semibold" disabled><i class="bi bi-check-lg"></i> Current Active Plan</button>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+<% if (subscriptions.length > 0) { %>
+  <div class="mt-5 animate-in">
+    <h3 class="fw-bold mb-3"><i class="bi bi-clock-history"></i> Subscription History</h3>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Amount</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% subscriptions.forEach(s => { %>
+            <tr>
+              <td class="fw-semibold"><%= s.plan.toUpperCase() %></td>
+              <td>₹<%= s.amount %></td>
+              <td><%= new Date(s.startDate).toLocaleDateString() %></td>
+              <td><%= new Date(s.endDate).toLocaleDateString() %></td>
+              <td><span class="badge <%= s.status === 'active' ? 'bg-success' : 'bg-secondary' %>"><%= s.status %></span></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% } %>
+<%- include('../partials/footer') %>

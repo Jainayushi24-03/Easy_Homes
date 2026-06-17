@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+<div class="row justify-content-center animate-in">
+  <div class="col-md-10 col-lg-8">
+    <div class="card shadow-lg border-0">
+      <div class="card-body p-4">
+        <div class="text-center mb-4">
+          <div class="feature-icon purple mx-auto mb-3" style="width:60px;height:60px;font-size:1.5rem"><i class="bi bi-pencil"></i></div>
+          <h3 class="fw-bold">Edit Property</h3>
+          <p class="text-muted">Update your property details</p>
+        </div>
+        <% if (locals.error) { %>
+          <div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> <%= error %></div>
+        <% } %>
+        <form method="POST" action="/owner/edit-property/<%= property._id %>">
+          <div class="row">
+            <div class="col-md-8 mb-3">
+              <label class="form-label">Property Title</label>
+              <input type="text" name="title" class="form-control" value="<%= property.title %>" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Monthly Rent (₹)</label>
+              <input type="number" name="price" class="form-control" value="<%= property.price %>" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3" required><%= property.description %></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Bedrooms</label>
+              <input type="number" name="bedrooms" class="form-control" value="<%= property.bedrooms %>">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Bathrooms</label>
+              <input type="number" name="bathrooms" class="form-control" value="<%= property.bathrooms %>">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Area</label>
+              <input type="text" name="area" class="form-control" value="<%= property.area %>">
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">Reveal Price (₹)</label>
+              <input type="number" name="ownerContactRevealPrice" class="form-control" value="<%= property.ownerContactRevealPrice %>">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Full Address</label>
+            <input type="text" name="address" class="form-control" value="<%= property.address %>" required>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label">City</label>
+              <input type="text" name="city" class="form-control" value="<%= property.city %>" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label">State</label>
+              <input type="text" name="state" class="form-control" value="<%= property.state %>" required>
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label">Pincode</label>
+              <input type="text" name="pincode" class="form-control" value="<%= property.pincode %>" required>
+            </div>
+          </div>
+          <div class="form-check mb-4">
+            <input type="checkbox" name="available" class="form-check-input" id="available" <%= property.available ? 'checked' : '' %>>
+            <label class="form-check-label fw-medium" for="available">Available for rent</label>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold"><i class="bi bi-check-circle"></i> Update Property</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>
