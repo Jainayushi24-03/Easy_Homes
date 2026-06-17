@@ -8,10 +8,14 @@ const Review = require("../models/Review");
 const User = require("../models/User");
 const { auth, userOnly } = require("../middleware/auth");
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_xxx",
-  key_secret: process.env.RAZORPAY_KEY_SECRET || "xxx",
-});
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || "";
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
+const razorpayEnabled = RAZORPAY_KEY_ID.startsWith("rzp_") && RAZORPAY_KEY_SECRET.length > 0;
+
+const razorpay = razorpayEnabled ? new Razorpay({
+  key_id: RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_KEY_SECRET,
+}) : null;
 
 const router = express.Router();
 
@@ -226,13 +230,12 @@ router.post("/create-order", auth, userOnly, async (req, res) => {
     if (type === "subscription") {
       const planDetails = PLAN_DETAILS[plan];
       if (!planDetails) return res.status(400).json({ error: "Invalid plan" });
-      const options = {
-        amount: planDetails.price * 100,
-        currency: "INR",
-        receipt: `sub_${req.user._id}_${Date.now()}`,
-      };
-      const order = await razorpay.orders.create(options);
-      return res.json({ orderId: order.id, amount: order.amount, key: razorpay.key_id, plan, type: "subscription" });
+      if (!razorpayEnabled) {
+        const fakeId = "order_" + Date.now();
+        return res.json({ orderId: fakeId, amount: planDetails.price * 100, key: "simulated", plan, type: "subscription", simulated: true });
+      }
+      const order = await razorpay.orders.create({ amount: planDetails.price * 100, currency: "INR", receipt: `sub_${req.user._id}_${Date.now()}` });
+      return res.json({ orderId: order.id, amount: order.amount, key: RAZORPAY_KEY_ID, plan, type: "subscription" });
     }
     if (type === "reveal") {
       const property = await Property.findById(propertyId);
@@ -240,13 +243,13 @@ router.post("/create-order", auth, userOnly, async (req, res) => {
       if (req.session.paidProperties && req.session.paidProperties.includes(propertyId)) {
         return res.json({ alreadyPaid: true });
       }
-      const options = {
-        amount: (property.ownerContactRevealPrice || 50) * 100,
-        currency: "INR",
-        receipt: `rev_${req.user._id}_${propertyId}_${Date.now()}`,
-      };
-      const order = await razorpay.orders.create(options);
-      return res.json({ orderId: order.id, amount: order.amount, key: razorpay.key_id, propertyId, type: "reveal" });
+      const amount = (property.ownerContactRevealPrice || 50) * 100;
+      if (!razorpayEnabled) {
+        const fakeId = "order_" + Date.now();
+        return res.json({ orderId: fakeId, amount, key: "simulated", propertyId, type: "reveal", simulated: true });
+      }
+      const order = await razorpay.orders.create({ amount, currency: "INR", receipt: `rev_${req.user._id}_${propertyId}_${Date.now()}` });
+      return res.json({ orderId: order.id, amount: order.amount, key: RAZORPAY_KEY_ID, propertyId, type: "reveal" });
     }
     res.status(400).json({ error: "Invalid type" });
   } catch (err) {
@@ -254,12 +257,17 @@ router.post("/create-order", auth, userOnly, async (req, res) => {
   }
 });
 
+function verifyRazorpaySignature(orderId, paymentId, signature) {
+  if (!razorpayEnabled) return true;
+  const body = orderId + "|" + paymentId;
+  const expected = crypto.createHmac("sha256", RAZORPAY_KEY_SECRET).update(body).digest("hex");
+  return expected === signature;
+}
+
 router.post("/verify-payment", auth, userOnly, async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, plan, type, propertyId } = req.body;
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSig = crypto.createHmac("sha256", razorpay.key_secret).update(body).digest("hex");
-    if (expectedSig !== razorpay_signature) {
+    if (!verifyRazorpaySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature)) {
       return res.status(400).json({ success: false, error: "Invalid signature" });
     }
     if (type === "subscription") {
@@ -269,7 +277,7 @@ router.post("/verify-payment", auth, userOnly, async (req, res) => {
       endDate.setDate(endDate.getDate() + planDetails.durationDays);
       await Subscription.create({
         user: req.user._id, plan, amount: planDetails.price, endDate,
-        paymentId: razorpay_payment_id, status: "active",
+        paymentId: razorpay_payment_id || ("PAY_" + Date.now()), status: "active",
       });
       await User.findByIdAndUpdate(req.user._id, {
         "subscription.plan": plan, "subscription.startDate": new Date(),

@@ -213,6 +213,20 @@ function payReveal(propertyId, amount) {
   }).then(r=>r.json()).then(data=>{
     if(data.error) return alert(data.error);
     if(data.alreadyPaid) return window.location.reload();
+    if(data.simulated) {
+      return fetch('/user/verify-payment', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          razorpay_order_id: data.orderId,
+          razorpay_payment_id: 'PAY_' + Date.now(),
+          razorpay_signature: 'simulated',
+          type:'reveal', propertyId
+        })
+      }).then(r=>r.json()).then(resp=>{
+        if(resp.success) window.location.href = resp.redirect;
+        else alert('Payment failed');
+      });
+    }
     var options = {
       key: data.key,
       amount: data.amount,
