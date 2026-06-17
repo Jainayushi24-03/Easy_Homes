@@ -14,7 +14,7 @@ class Property {
       city: (data.city || "").toLowerCase(),
       state: (data.state || "").toLowerCase(),
       pincode: data.pincode,
-      images: data.images || { hall: "", bedroom: "", kitchen: "" },
+      images: data.images || { hall: "", bedroom: "", kitchen: "", dining: "" },
       available: data.available !== undefined ? data.available : true,
       ownerContactRevealPrice: Number(data.ownerContactRevealPrice) || 50,
       createdAt: new Date(),

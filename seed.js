@@ -32,18 +32,32 @@ const bedroom = [
   "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&h=280&fit=crop",
 ];
 const kitchen = [
-  "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1613977257592-4870f396e5f5?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=400&h=280&fit=crop",
-  "https://images.unsplash.com/photo-1613977257365-aaae5a9817ff?w=400&h=280&fit=crop",
+  "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1600566753086-00f18f6bae2b?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1600585153490-76fb20a32601?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1600573472550-8090b5e0745e?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1600489000022-c2086d79f9d4?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=800&h=400&fit=crop",
+];
+const dining = [
+  "https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1577140917170-285929fb55b7?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1585409677983-0f6c41ca9c3b?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1592861956120-e524fc739696?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1618304600588-e272272f7da3?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800&h=400&fit=crop",
 ];
 
 const properties = [
@@ -124,6 +138,7 @@ async function seed() {
           hall: hall[i % hall.length],
           bedroom: bedroom[i % bedroom.length],
           kitchen: kitchen[i % kitchen.length],
+          dining: dining[i % dining.length],
         },
       });
     }
