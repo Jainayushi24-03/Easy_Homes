@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+<div class="row justify-content-center animate-in">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-lg border-0">
+      <div class="card-body p-4">
+        <div class="text-center mb-4">
+          <div class="feature-icon purple mx-auto mb-3" style="width:70px;height:70px;font-size:2rem"><i class="bi bi-person-circle"></i></div>
+          <h3 class="fw-bold">My Profile</h3>
+        </div>
+        <% if (locals.error) { %>
+          <div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> <%= error %></div>
+        <% } %>
+        <% if (locals.success) { %>
+          <div class="alert alert-success"><i class="bi bi-check-circle"></i> <%= success %></div>
+        <% } %>
+        <form method="POST" action="/owner/profile">
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" name="name" class="form-control" value="<%= user.name %>" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" value="<%= user.email %>" disabled>
+            <small class="text-muted">Email cannot be changed</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Phone</label>
+            <input type="text" name="phone" class="form-control" value="<%= user.phone || '' %>">
+          </div>
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold"><i class="bi bi-check-circle"></i> Update Profile</button>
+        </form>
+        <hr class="my-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-shield-lock"></i> Change Password</h5>
+        <form method="POST" action="/owner/change-password">
+          <div class="mb-3">
+            <label class="form-label">Current Password</label>
+            <input type="password" name="currentPassword" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">New Password</label>
+            <input type="password" name="newPassword" class="form-control" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-warning w-100 py-2 fw-semibold"><i class="bi bi-key"></i> Change Password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

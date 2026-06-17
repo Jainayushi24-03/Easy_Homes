@@ -20,9 +20,10 @@
         <% if (locals.user) { %>
           <li class="nav-item"><a class="nav-link" href="/<%= user.role %>/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
           <% if (user.role === 'user') { %>
+            <li class="nav-item"><a class="nav-link" href="/user/favorites"><i class="bi bi-heart-fill text-danger"></i> Favorites</a></li>
             <li class="nav-item"><a class="nav-link" href="/user/subscriptions"><i class="bi bi-star-fill"></i> Plans</a></li>
           <% } %>
-          <li class="nav-item"><span class="nav-link text-warning fw-semibold"><i class="bi bi-person-circle"></i> <%= user.name %></span></li>
+          <li class="nav-item"><a class="nav-link" href="/<%= user.role %>/profile"><i class="bi bi-person-circle"></i> <%= user.name %></a></li>
           <li class="nav-item"><a class="nav-link btn btn-light text-primary fw-semibold px-3 ms-2" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
         <% } else { %>
           <li class="nav-item"><a class="nav-link" href="/login"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>

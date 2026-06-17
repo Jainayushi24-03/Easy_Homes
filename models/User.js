@@ -15,6 +15,8 @@ class User {
         searchLimit: 0,
         searchesUsed: 0,
       },
+      favorites: [],
+      recentlyViewed: [],
       createdAt: new Date(),
     };
     return users.insert(user);
@@ -40,6 +42,32 @@ class User {
 
   static async updateOne(filter, update) {
     return users.update(filter, update);
+  }
+
+  static async addFavorite(userId, propertyId) {
+    const user = await User.findById(userId);
+    if (!user.favorites.includes(propertyId)) {
+      user.favorites.push(propertyId);
+      await users.update({ _id: userId }, { $set: { favorites: user.favorites } });
+    }
+    return user;
+  }
+
+  static async removeFavorite(userId, propertyId) {
+    const user = await User.findById(userId);
+    user.favorites = (user.favorites || []).filter((id) => id !== propertyId);
+    await users.update({ _id: userId }, { $set: { favorites: user.favorites } });
+    return user;
+  }
+
+  static async addRecentlyViewed(userId, propertyId) {
+    const user = await User.findById(userId);
+    let recent = user.recentlyViewed || [];
+    recent = recent.filter((id) => id !== propertyId);
+    recent.unshift(propertyId);
+    if (recent.length > 10) recent = recent.slice(0, 10);
+    await users.update({ _id: userId }, { $set: { recentlyViewed: recent } });
+    return user;
   }
 }
 

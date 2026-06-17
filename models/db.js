@@ -6,5 +6,7 @@ const dataDir = path.join(__dirname, "..", "data");
 const users = Datastore.create({ filename: path.join(dataDir, "users.db"), autoload: true });
 const properties = Datastore.create({ filename: path.join(dataDir, "properties.db"), autoload: true });
 const subscriptions = Datastore.create({ filename: path.join(dataDir, "subscriptions.db"), autoload: true });
+const reviews = Datastore.create({ filename: path.join(dataDir, "reviews.db"), autoload: true });
+const passwordResets = Datastore.create({ filename: path.join(dataDir, "passwordResets.db"), autoload: true });
 
-module.exports = { users, properties, subscriptions };
+module.exports = { users, properties, subscriptions, reviews, passwordResets };

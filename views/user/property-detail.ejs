@@ -46,8 +46,17 @@
         });
       </script>
       <div class="card-body p-4">
-        <h2 class="fw-bold"><%= property.title %></h2>
-        <p class="text-muted mb-3"><i class="bi bi-geo-alt-fill text-primary"></i> <%= property.address %>, <%= property.city %>, <%= property.state %> — <%= property.pincode %></p>
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h2 class="fw-bold mb-1"><%= property.title %></h2>
+            <p class="text-muted mb-0"><i class="bi bi-geo-alt-fill text-primary"></i> <%= property.address %>, <%= property.city %>, <%= property.state %> — <%= property.pincode %></p>
+          </div>
+          <form method="POST" action="/user/favorite/<%= property._id %>">
+            <button type="submit" class="btn <%= isFavorited ? 'btn-danger' : 'btn-outline-danger' %>">
+              <i class="bi bi-heart<%= isFavorited ? '-fill' : '' %>"></i>
+            </button>
+          </form>
+        </div>
         <hr>
         <div class="row text-center g-3 mb-4">
           <div class="col-3">
@@ -80,6 +89,68 @@
         <span class="badge <%= property.available ? 'bg-success' : 'bg-warning' %> fs-6 px-3 py-2"><%= property.available ? '✓ Available' : '✗ Rented' %></span>
       </div>
     </div>
+
+    <% if (locals.rating && rating.count > 0) { %>
+      <div class="card shadow-lg border-0 mt-4">
+        <div class="card-body p-4">
+          <h4 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning"></i> Ratings & Reviews</h4>
+          <div class="d-flex align-items-center mb-4">
+            <div class="text-center me-4">
+              <h1 class="fw-bold text-warning mb-0"><%= rating.average %></h1>
+              <small class="text-muted">out of 5</small>
+            </div>
+            <div>
+              <% var stars = Math.round(rating.average); %>
+              <% for (var s = 1; s <= 5; s++) { %>
+                <i class="bi bi-star<%= s <= stars ? '-fill' : '' %> text-warning fs-5"></i>
+              <% } %>
+              <p class="text-muted mb-0 small"><%= rating.count %> review<%= rating.count !== 1 ? 's' : '' %></p>
+            </div>
+          </div>
+          <% reviews.forEach(r => { %>
+            <div class="border-bottom pb-3 mb-3">
+              <div class="d-flex justify-content-between">
+                <strong><%= r.userName %></strong>
+                <small class="text-muted"><%= new Date(r.createdAt).toLocaleDateString() %></small>
+              </div>
+              <div class="mb-1">
+                <% for (var s = 1; s <= 5; s++) { %>
+                  <i class="bi bi-star<%= s <= r.rating ? '-fill' : '' %> text-warning small"></i>
+                <% } %>
+              </div>
+              <% if (r.comment) { %><p class="text-muted mb-0 small"><%= r.comment %></p><% } %>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (!locals.userReview) { %>
+      <div class="card shadow-lg border-0 mt-4">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-3"><i class="bi bi-pencil-square"></i> Write a Review</h5>
+          <% if (locals.error) { %>
+            <div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> <%= error %></div>
+          <% } %>
+          <form method="POST" action="/user/review/<%= property._id %>">
+            <div class="mb-3">
+              <label class="form-label">Rating</label>
+              <div class="star-rating">
+                <% for (var s = 5; s >= 1; s--) { %>
+                  <input type="radio" name="rating" value="<%= s %>" id="star<%= s %>" <%= s === 5 ? 'checked' : '' %>>
+                  <label for="star<%= s %>" class="bi bi-star-fill fs-3"></label>
+                <% } %>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Comment <small class="text-muted">(optional)</small></label>
+              <textarea name="comment" class="form-control" rows="3" placeholder="Share your experience..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Submit Review</button>
+          </form>
+        </div>
+      </div>
+    <% } %>
   </div>
   <div class="col-lg-4 mb-4">
     <div class="card shadow-lg border-0 sticky-top" style="top: 90px;">
@@ -95,6 +166,7 @@
           <hr>
           <p class="mb-2"><i class="bi bi-envelope-fill text-primary me-2"></i> <strong>Email:</strong><br><span class="text-muted"><%= property.owner.email %></span></p>
           <p class="mb-2"><i class="bi bi-telephone-fill text-primary me-2"></i> <strong>Phone:</strong><br><span class="text-muted"><%= property.owner.phone || 'Not provided' %></span></p>
+          <a href="/user/dashboard?owner=<%= property.owner._id %>" class="btn btn-outline-primary w-100 mt-2"><i class="bi bi-building"></i> More by this Owner</a>
         <% } else if (isSubscribed) { %>
           <div class="text-center">
             <i class="bi bi-check-circle-fill text-success display-6"></i>
@@ -108,13 +180,22 @@
             <p class="text-muted small">to reveal owner contact</p>
           </div>
           <form method="POST" action="/user/pay-reveal/<%= property._id %>">
-            <button type="submit" class="btn btn-success w-100 py-2 fw-semibold mb-3"><i class="bi bi-unlock-fill"></i> Pay ₹<%= property.ownerContactRevealPrice %> &amp; Reveal</button>
+            <button type="submit" class="btn btn-success w-100 py-2 fw-semibold mb-3"><i class="bi bi-unlock-fill"></i> Pay ₹<%= property.ownerContactRevealPrice %> & Reveal</button>
           </form>
           <div class="text-center">
             <p class="text-muted small">— OR —</p>
             <a href="/user/subscriptions" class="btn btn-warning w-100 py-2 fw-semibold"><i class="bi bi-star-fill"></i> Subscribe for Unlimited</a>
           </div>
         <% } %>
+        <hr>
+        <div class="text-center">
+          <p class="fw-semibold mb-2">Share this property</p>
+          <div class="d-flex justify-content-center gap-2">
+            <a href="https://wa.me/?text=Check out this property: <%= encodeURIComponent(property.title) %> - ₹<%= property.price %>/mo at <%= encodeURIComponent(property.city) %> <%= encodeURIComponent(baseUrl + '/user/property/' + property._id) %>" target="_blank" class="btn btn-success btn-sm"><i class="bi bi-whatsapp"></i></a>
+            <a href="mailto:?subject=<%= encodeURIComponent('Check out this property: ' + property.title) %>&body=<%= encodeURIComponent('I found this property on Easy Homes: ₹' + property.price + '/mo - ' + property.title + ' in ' + property.city + '. View details: ' + baseUrl + '/user/property/' + property._id) %>" class="btn btn-primary btn-sm"><i class="bi bi-envelope"></i></a>
+            <button class="btn btn-outline-secondary btn-sm" onclick="navigator.clipboard.writeText('<%= baseUrl + '/user/property/' + property._id %>').then(() => { this.innerHTML='<i class=\"bi bi-check\"></i>'; setTimeout(() => { this.innerHTML='<i class=\"bi bi-link-45deg\"></i>'; }, 2000); })"><i class="bi bi-link-45deg"></i></button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

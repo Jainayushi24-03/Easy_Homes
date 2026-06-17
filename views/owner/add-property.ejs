@@ -11,7 +11,7 @@
         <% if (locals.error) { %>
           <div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> <%= error %></div>
         <% } %>
-        <form method="POST" action="/owner/add-property">
+        <form method="POST" action="/owner/add-property" enctype="multipart/form-data">
           <div class="row">
             <div class="col-md-8 mb-3">
               <label class="form-label">Property Title</label>
@@ -43,6 +43,24 @@
               <label class="form-label">Reveal Price (₹)</label>
               <input type="number" name="ownerContactRevealPrice" class="form-control" value="50">
             </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Property Images</label>
+            <div class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label small">Hall / Living Room</label>
+                <input type="file" name="imgHall" class="form-control" accept="image/*">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small">Bedroom</label>
+                <input type="file" name="imgBedroom" class="form-control" accept="image/*">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small">Kitchen</label>
+                <input type="file" name="imgKitchen" class="form-control" accept="image/*">
+              </div>
+            </div>
+            <small class="text-muted">Max 5MB per image. Allowed: jpg, png, gif, webp</small>
           </div>
           <div class="mb-3">
             <label class="form-label">Full Address</label>

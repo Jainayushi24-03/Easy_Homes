@@ -34,5 +34,27 @@
       </div>
     <% }) %>
   </div>
+
+  <% if (locals.totalPages && totalPages > 1) { %>
+    <% var qp = Object.assign({}, locals.query); %>
+    <nav class="mt-4 animate-in">
+      <ul class="pagination justify-content-center">
+        <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+          <% qp.page = currentPage - 1; %>
+          <a class="page-link" href="?<%= Object.entries(qp).filter(([k,v]) => v).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&') %>">Previous</a>
+        </li>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <% qp.page = i; %>
+          <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+            <a class="page-link" href="?<%= Object.entries(qp).filter(([k,v]) => v).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&') %>"><%= i %></a>
+          </li>
+        <% } %>
+        <% qp.page = currentPage + 1; %>
+        <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="?<%= Object.entries(qp).filter(([k,v]) => v).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&') %>">Next</a>
+        </li>
+      </ul>
+    </nav>
+  <% } %>
 <% } %>
 <%- include('../partials/footer') %>

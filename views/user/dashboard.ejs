@@ -5,9 +5,12 @@
       <h2 class="fw-bold mb-1"><i class="bi bi-search text-gradient"></i> Find Your Home</h2>
       <p class="text-muted mb-0">Search and filter rental properties</p>
     </div>
-    <% if (!isSubscribed) { %>
-      <a href="/user/subscriptions" class="btn btn-warning mt-2 mt-sm-0"><i class="bi bi-star-fill"></i> Subscribe for Unlimited</a>
-    <% } %>
+    <div class="d-flex gap-2">
+      <a href="/user/favorites" class="btn btn-outline-danger mt-2 mt-sm-0"><i class="bi bi-heart-fill"></i> Favorites</a>
+      <% if (!isSubscribed) { %>
+        <a href="/user/subscriptions" class="btn btn-warning mt-2 mt-sm-0"><i class="bi bi-star-fill"></i> Subscribe</a>
+      <% } %>
+    </div>
   </div>
 
   <% if (!isSubscribed) { %>
@@ -18,6 +21,27 @@
     <div class="alert alert-success"><i class="bi bi-check-circle"></i> <strong><%= plan.charAt(0).toUpperCase() + plan.slice(1) %></strong> plan — <%= searchesUsed %>/<%= searchLimit === -1 ? '∞' : searchLimit %> searches used</div>
   <% } %>
 </div>
+
+<% if (locals.recentProperties && recentProperties.length > 0) { %>
+  <div class="mb-4 animate-in">
+    <h5 class="fw-bold mb-3"><i class="bi bi-clock-history"></i> Recently Viewed</h5>
+    <div class="row g-2">
+      <% recentProperties.forEach(p => { %>
+        <div class="col-6 col-md-4 col-lg-2">
+          <a href="/user/property/<%= p._id %>" class="text-decoration-none">
+            <div class="card shadow-sm h-100 border-0">
+              <img src="<%= p.images && p.images.hall || 'https://picsum.photos/seed/default/200/150' %>" class="card-img-top" style="height:80px;object-fit:cover" alt="" onerror="this.style.display='none'">
+              <div class="card-body p-2 text-center">
+                <small class="fw-semibold d-block text-truncate"><%= p.title %></small>
+                <small class="text-muted">₹<%= p.price %>/mo</small>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+<% } %>
 
 <div class="card search-card mb-4 animate-in">
   <form method="GET" action="/user/dashboard" class="row g-3">
@@ -36,18 +60,18 @@
     <div class="col-md-3 col-6">
       <label class="form-label"><i class="bi bi-sort-down"></i> Sort By</label>
       <select name="sort" class="form-select">
-        <option value="">📅 Latest</option>
-        <option value="price_asc" <%= query.sort === 'price_asc' ? 'selected' : '' %>>💰 Price: Low to High</option>
-        <option value="price_desc" <%= query.sort === 'price_desc' ? 'selected' : '' %>>💰 Price: High to Low</option>
+        <option value="">Latest</option>
+        <option value="price_asc" <%= query.sort === 'price_asc' ? 'selected' : '' %>>Price: Low to High</option>
+        <option value="price_desc" <%= query.sort === 'price_desc' ? 'selected' : '' %>>Price: High to Low</option>
       </select>
     </div>
     <div class="col-md-3 col-6">
       <label class="form-label">Min Price</label>
-      <input type="number" name="minPrice" class="form-control" placeholder="₹ Min" value="<%= query.minPrice || '' %>">
+      <input type="number" name="minPrice" class="form-control" placeholder="Min" value="<%= query.minPrice || '' %>">
     </div>
     <div class="col-md-3 col-6">
       <label class="form-label">Max Price</label>
-      <input type="number" name="maxPrice" class="form-control" placeholder="₹ Max" value="<%= query.maxPrice || '' %>">
+      <input type="number" name="maxPrice" class="form-control" placeholder="Max" value="<%= query.maxPrice || '' %>">
     </div>
     <div class="col-md-3 col-6">
       <label class="form-label"><i class="bi bi-house-door"></i> Bedrooms</label>
@@ -60,7 +84,7 @@
       </select>
     </div>
     <div class="col-md-3 col-12 d-flex align-items-end">
-      <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-search"></i> Search Properties</button>
+      <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-search"></i> Search</button>
     </div>
   </form>
 </div>
@@ -72,10 +96,22 @@
     <% properties.forEach((p, i) => { %>
       <div class="col-md-6 col-lg-4 animate-in">
         <div class="card shadow-sm h-100">
-          <img src="<%= p.images && p.images.hall || 'https://picsum.photos/seed/default/400/280' %>" class="card-img-top property-img" alt="<%= p.title %>" onerror="this.style.display='none'">
+          <div class="position-relative">
+            <img src="<%= p.images && p.images.hall || 'https://picsum.photos/seed/default/400/280' %>" class="card-img-top property-img" alt="<%= p.title %>" onerror="this.style.display='none'">
+            <form method="POST" action="/user/favorite/<%= p._id %>" class="position-absolute top-0 end-0 m-2">
+              <button type="submit" class="btn btn-sm rounded-circle <%= favorites && favorites.has(p._id) ? 'btn-danger' : 'btn-light bg-white bg-opacity-75' %>" style="width:36px;height:36px">
+                <i class="bi bi-heart<%= favorites && favorites.has(p._id) ? '-fill' : '' %>"></i>
+              </button>
+            </form>
+          </div>
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title fw-bold"><%= p.title %></h5>
-            <p class="text-muted small mb-2"><i class="bi bi-geo-alt-fill text-primary"></i> <%= p.city %>, <%= p.state %> — <%= p.pincode %></p>
+            <div class="d-flex justify-content-between align-items-start">
+              <h5 class="card-title fw-bold mb-0"><%= p.title %></h5>
+              <% if (p.rating > 0) { %>
+                <small class="text-warning fw-semibold ms-1"><i class="bi bi-star-fill"></i> <%= p.rating %></small>
+              <% } %>
+            </div>
+            <p class="text-muted small mb-2 mt-1"><i class="bi bi-geo-alt-fill text-primary"></i> <%= p.city %>, <%= p.state %> — <%= p.pincode %></p>
             <div class="d-flex gap-2 mb-2 flex-wrap">
               <span class="badge bg-primary fs-6">₹<%= p.price %>/mo</span>
               <span class="badge bg-info"><%= p.bedrooms %> BHK</span>
@@ -88,5 +124,27 @@
       </div>
     <% }) %>
   </div>
+
+  <% if (totalPages > 1) { %>
+    <% var qp = Object.assign({}, query); %>
+    <nav class="mt-4 animate-in">
+      <ul class="pagination justify-content-center">
+        <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+          <% qp.page = currentPage - 1; %>
+          <a class="page-link" href="?<%= Object.entries(qp).filter(([k,v]) => v).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&') %>">Previous</a>
+        </li>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <% qp.page = i; %>
+          <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+            <a class="page-link" href="?<%= Object.entries(qp).filter(([k,v]) => v).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&') %>"><%= i %></a>
+          </li>
+        <% } %>
+        <% qp.page = currentPage + 1; %>
+        <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="?<%= Object.entries(qp).filter(([k,v]) => v).map(([k,v]) => k+'='+encodeURIComponent(v)).join('&') %>">Next</a>
+        </li>
+      </ul>
+    </nav>
+  <% } %>
 <% } %>
 <%- include('../partials/footer') %>
