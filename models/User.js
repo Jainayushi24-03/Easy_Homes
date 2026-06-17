@@ -46,9 +46,10 @@ class User {
 
   static async addFavorite(userId, propertyId) {
     const user = await User.findById(userId);
-    if (!user.favorites.includes(propertyId)) {
-      user.favorites.push(propertyId);
-      await users.update({ _id: userId }, { $set: { favorites: user.favorites } });
+    const favorites = user.favorites || [];
+    if (!favorites.includes(propertyId)) {
+      favorites.push(propertyId);
+      await users.update({ _id: userId }, { $set: { favorites } });
     }
     return user;
   }
